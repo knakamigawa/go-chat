@@ -27,3 +27,5 @@ export PORT=[your port]
 # example
 % curl 'http://localhost:8080?text=こんにちは' -H 'Content-Type: application/json' -H 'Authorization: Bearer api_key_1234' 
 ```
+
+※本アプリケーションを利用する場合、簡易的な認証機構を入れていますが広く公開する場合はきちんと認証機構を実装することをお勧めします
