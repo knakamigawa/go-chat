@@ -1,4 +1,4 @@
-module go-chat
+module go-chat-ai-server
 
 go 1.20
 
