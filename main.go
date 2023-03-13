@@ -5,7 +5,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
-	"go-chat/app/use_case"
+	"go-chat-ai-server/app/use_case"
 	"net/http"
 	"os"
 )
