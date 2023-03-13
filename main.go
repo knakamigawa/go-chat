@@ -18,7 +18,7 @@ func main() {
 	e.Use(APIKeyAuthMiddleware)
 
 	e.GET("/", handleChat)
-	e.Logger.Fatal(e.Start(":8081"))
+	e.Logger.Fatal(e.Start(fmt.Sprintf(":%s", os.Getenv("PORT"))))
 }
 
 func handleChat(c echo.Context) error {
