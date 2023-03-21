@@ -4,6 +4,7 @@ OpenAI Chat API test
 
 Please prepare the environment for postgres to use as the DB.
 
+## Web Interface Image
 <img width="400" alt="image" src="https://user-images.githubusercontent.com/18062740/226601876-8e7ff370-7552-4e32-b6cb-ce9d5e7cf8f7.png">
 
 ## setup
