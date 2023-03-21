@@ -32,7 +32,7 @@ export DB_HOST=[your postgres host]
 
 Please access this URL in your browser.
 
-http://localhost:[your port]
+`http://localhost:[your port]`
 
 
 ### API
