@@ -2,6 +2,8 @@
 
 OpenAI Chat API test
 
+Please prepare the environment for postgres to use as the DB.
+
 ## setup
 
 ```shell
@@ -13,6 +15,10 @@ OpenAI Chat API test
 export OPEN_API_TOKEN=[your open ai api token]
 export MY_API_TOKEN=[your api call api token]
 export PORT=[your port]
+export DB_USER=[your postgres user]
+export DB_PASSWORD=[your postgres password]
+export DB_HOST=[your postgres host]
+
 ```
 
 ## usage
