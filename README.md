@@ -22,10 +22,10 @@ export PORT=[your port]
 ```
 
 ```shell
-% curl 'http://localhost:[your port]?text=こんにちは' -H 'Content-Type: application/json' -H 'Authorization: Bearer [your api call api token]'
+% curl 'http://localhost:[your port]/api?text=こんにちは' -H 'Content-Type: application/json' -H 'Authorization: Bearer [your api call api token]'
 
 # example
-% curl 'http://localhost:8080?text=こんにちは' -H 'Content-Type: application/json' -H 'Authorization: Bearer api_key_1234' 
+% curl 'http://localhost:8080?/api?text=こんにちは' -H 'Content-Type: application/json' -H 'Authorization: Bearer api_key_1234' 
 ```
 
 ※本アプリケーションを利用する場合、簡易的な認証機構を入れていますが広く公開する場合はきちんと認証機構を実装することをお勧めします

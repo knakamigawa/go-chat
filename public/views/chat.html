@@ -34,10 +34,11 @@
                 const data = {
                     text: text,
                 };
-                const response = await fetch('/chat', {
+                const response = await fetch('/api/chat', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer {{ .ApiKey }}'
                     },
                     body: JSON.stringify(data)
                 });
@@ -97,6 +98,6 @@
 </head>
 <body>
 <textarea id="terminal" rows="5" cols="20" spellcheck="false"></textarea>
-<input type="hidden" id="characterName" value="{{ . }}" />
+<input type="hidden" id="characterName" value="{{ .Name }}" />
 </body>
 </html>

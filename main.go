@@ -31,11 +31,14 @@ func main() {
 	e.Use(session.Middleware(sessions.NewCookieStore([]byte("abcdefg1234-session"))))
 	e.GET("/", cs.handleCharacterSelectEntry)
 	e.GET("/chat", cs.handleChatEntry)
-	e.POST("/chat", cs.handleChatSend)
 	e.POST("/character", cs.handleSetCharacter)
-	e.GET("/character", cs.handleGetCharacter)
 	e.File("/character/create", "public/character_create.html")
 	e.POST("/character/create", cs.handleCharacterCreate)
+
+	api := e.Group("/api")
+	api.Use(APIKeyAuthMiddleware)
+	api.POST("/chat", cs.handleChatSend)
+
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%s", os.Getenv("PORT"))))
 }
 
@@ -96,7 +99,15 @@ func (s chatService) handleChatEntry(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	return c.Render(http.StatusOK, "chat.html", sess.Values["name"])
+	params := struct {
+		Name   string
+		ApiKey string
+	}{
+		Name:   sess.Values["name"].(string),
+		ApiKey: os.Getenv("MY_API_TOKEN"),
+	}
+
+	return c.Render(http.StatusOK, "chat.html", params)
 
 }
 
@@ -146,6 +157,20 @@ func (s chatService) handleCharacterCreate(c echo.Context) error {
 	}
 
 	return c.Redirect(http.StatusFound, "/")
+}
+
+func APIKeyAuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		authToken := c.Request().Header.Get("Authorization")
+		if authToken != fmt.Sprintf("Bearer %s", os.Getenv("MY_API_TOKEN")) {
+			c.Logger().Debugf("invalid api key: ", authToken)
+			return fmt.Errorf("invalid api key")
+		}
+		if err := next(c); err != nil {
+			c.Error(err)
+		}
+		return nil
+	}
 }
 
 type Template struct {
