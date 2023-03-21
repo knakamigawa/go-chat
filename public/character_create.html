@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>キャラクター選択</title>
+    <link href="https://unpkg.com/@primer/css@^20.2.4/dist/primer.css" rel="stylesheet"/>
+</head>
+<body>
+
+<div class="p-6 container-lg col-10">
+    <div class="Box">
+        <div class="Box-header">
+            <h3 class="Box-title">
+                キャラクター登録
+            </h3>
+        </div>
+        <div class="Box-body">
+            <form action="/character/create" method="POST">
+                <div class="p-2 container-lg d-flex">
+                    <label class="col-4" for="name">name</label>
+                    <input class="col-8 form-control" type="text" id="name" name="name">
+                </div>
+                <div class="p-2 container-lg d-flex">
+                    <label class="col-4" for="bio">bio</label>
+                    <textarea class="col-8 form-control input-block" id="bio" name="bio"></textarea>
+                </div>
+
+                <div class="p-2 mx-auto" style="text-align: center">
+                    <button class="btn" type="submit" name="button">キャラクター登録</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

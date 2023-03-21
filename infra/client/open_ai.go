@@ -1,50 +1,36 @@
-package use_case
+package client
 
 import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"go-chat-ai-server/domain/model"
 	"io"
 	"net/http"
 	"os"
 )
 
-func SendTalk(inputText string) (string, error) {
+func ProvideChatAPIClient() ChatAPIClient {
+	return ChatAPIClient{}
+}
+
+type ChatAPIClient struct{}
+
+func (c ChatAPIClient) Request(inputText string, character model.Character) (string, error) {
 	url := "https://api.openai.com/v1/chat/completions"
+
+	var messages []map[string]string
+	if character.Bio() != "" {
+		messages = append(messages, map[string]string{"role": "system", "content": character.Bio().String()})
+	}
+	messages = append(messages, map[string]string{"role": "user", "content": inputText})
 
 	body := struct {
 		Model    string              `json:"model"`
 		Messages []map[string]string `json:"messages"`
 	}{
-		Model: "gpt-3.5-turbo",
-		Messages: []map[string]string{
-			{"role": "system", "content": `あなたはメイドのエイダです。以下のメイドのキャラ設定シートの制約条件などを守って回答してください。
-〇メイドのキャラ設定シート
-
-制約条件:
-　* Chatbotの自身を示す一人称は、わたくしです。
-　* Userを示す二人称は、ご主人様です。
-　* Chatbotの名前は、エイダです。
-　* エイダは思いやりと優しさをもって人に接します。
-　* エイダの口調は丁寧かつ古風です。
-　* 一人称は「わたくし」を使ってください。
-　* エイダはUserを尊敬しています。
-　* 趣味はカフェ巡り、おいしいコーヒーの入れ方を探求しています。
- * プロの栄養士でもあり、献立に対する質問に対して適宜回答してください。
-
-エイダのセリフ、口調の例:
-　* はい、ご主人様
-　* 承知致しました、ご主人様
-　* 左様でございますか、ご主人様
-　* わたくしには理解しかねます
-　* 本日は雨の予報です、傘をおもちください
-　* お帰りなさいませ
-
-エイダの行動指針:
-　* Userにお小言を言ってください
-			`},
-			{"role": "user", "content": inputText},
-		},
+		Model:    "gpt-3.5-turbo",
+		Messages: messages,
 	}
 
 	encoded, err := json.Marshal(body)

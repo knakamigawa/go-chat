@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat</title>
+    <style>
+        body{
+            margin: 0;
+        }
+        #terminal{
+            border: none;
+            background-color: black;
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+    <script>
+        function waiting() {
+            let terminal = document.querySelector("#terminal");
+            return window.setInterval(function () {
+                const regex = /\.{4}$/i;
+                terminal.value += ".";
+                terminal.value = terminal.value.replace(regex, '');
+            }, 1000);
+        }
+
+        async function postData(text) {
+            const intervalId = waiting();
+            console.log(text);
+            try {
+                let terminal = document.querySelector("#terminal");
+                terminal.value += makeAIPrompt();
+                const data = {
+                    text: text,
+                };
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer {{ .ApiKey }}'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const json = await response.json();
+                const regex = /\.+$/i;
+                terminal.value = terminal.value.replace(regex, '');
+                window.clearTimeout(intervalId);
+
+                console.log('Success:', JSON.stringify(json));
+                terminal.value += json['msg'];
+                terminal.value += "\n" + makeYourPrompt();
+                terminal.focus();
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        window.addEventListener("load", function() {
+            let terminal = document.querySelector("#terminal");
+            terminal.style.width  = window.innerWidth + "rem";
+            terminal.style.height = window.innerHeight + "rem";
+
+            postData("挨拶して");
+
+            terminal.focus();
+        })
+
+        window.addEventListener("keyup", (event) => {
+            let terminal = document.querySelector("#terminal");
+
+            if(event.code === "Enter"){
+                if(terminal.value.match(/\n$/) === null){
+                    return;
+                }
+
+                const lines = terminal.value.split(/\n/);
+                console.log(lines);
+                postData(lines[lines.length - 2].replace(/^YOU>\s/, ''));
+
+                terminal.focus();
+            }
+        });
+
+        function makeAIPrompt() {
+            return document.querySelector("#characterName").value + "> ";
+        }
+
+        function makeYourPrompt() {
+            return "YOU> ";
+        }
+    </script>
+</head>
+<body>
+<textarea id="terminal" rows="5" cols="20" spellcheck="false"></textarea>
+<input type="hidden" id="characterName" value="{{ .Name }}" />
+</body>
+</html>
