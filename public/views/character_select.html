@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>キャラクター選択</title>
+    <link href="https://unpkg.com/@primer/css@^20.2.4/dist/primer.css" rel="stylesheet"/>
+</head>
+<body>
+
+<div class="p-6 container-lg col-4">
+    <div class="Box">
+        <div class="Box-header">
+            <h3 class="Box-title">
+                キャラクター選択
+            </h3>
+        </div>
+        <div class="Box-body">
+            <form action="/character" method="POST">
+                <div class="p-2 container-lg d-flex">
+                    <label class="col-4" for="name">Name</label>
+                    <select class="col-8 form-select" aria-label="name" id="name" name="name">
+                        {{ range .Names }}
+                        <option>{{ . }}</option>
+                        {{ end}}
+                    </select>
+                </div>
+
+                <div class="p-2 mx-auto" style="text-align: center">
+                    <button class="btn" type="submit" name="button">送信</button>
+                </div>
+            </form>
+            <a href="/character/create">登録</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>
