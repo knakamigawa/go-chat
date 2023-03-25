@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 200px;
+    }
+
+    input[type="submit"] {
+      cursor: pointer;
+    }
+
+    .error-message {
+      color: red;
+      font-size: 14px;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Sign Up</h1>
+  <form action="/signup" method="POST">
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" value="{{.Name}}" required>
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" value="{{.Email}}" required>
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" required>
+    <input type="submit" value="Sign Up">
+  </form>
+  {{if .ErrorMessages}}
+  <hr>
+    {{range .ErrorMessages}}
+    <div class="error-message">{{.}}</div>
+    {{end}}
+  {{end}}
+</div>
+</body>
+</html>

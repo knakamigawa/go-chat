@@ -5,6 +5,5 @@ sql:
     schema: "migrations"
     gen:
       go:
-        sql_package: "pgx/v4"
         package: "chat_db"
         out: "chat_db"
