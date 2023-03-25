@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"github.com/labstack/gommon/log"
 	"go-chat-ai-server/domain/model"
 	"go-chat-ai-server/infra/database/chat_db"
 	"golang.org/x/crypto/bcrypt"
@@ -40,7 +41,12 @@ func (r DbUserMailPassword) Save(ctx context.Context, user model.UserEmailPasswo
 	if err != nil {
 		return err
 	}
-	defer tx.Rollback()
+	defer func(tx *sql.Tx) {
+		err := tx.Rollback()
+		if err != nil {
+			log.Debug(err)
+		}
+	}(tx)
 	qtx := r.queries.WithTx(tx)
 	param := chat_db.CreateUserParams{
 		ID:        user.User().ID(),
