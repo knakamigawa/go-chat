@@ -6,6 +6,8 @@ package chat_db
 
 import (
 	"database/sql"
+
+	"github.com/google/uuid"
 )
 
 type Character struct {
@@ -13,4 +15,16 @@ type Character struct {
 	Name string
 	Bio  string
 	Note sql.NullString
+}
+
+type User struct {
+	ID        uuid.UUID
+	LoginName string
+}
+
+type UserLoginWithEmailPassword struct {
+	ID           int64
+	UserID       uuid.UUID
+	Email        string
+	PasswordHash string
 }

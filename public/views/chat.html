@@ -34,7 +34,7 @@
                 const data = {
                     text: text,
                 };
-                const response = await fetch('/api/chat', {
+                const response = await fetch('/ai/api/chat', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -97,7 +97,7 @@
     </script>
 </head>
 <body>
-<textarea id="terminal" rows="5" cols="20" spellcheck="false"></textarea>
+<label for="terminal"></label><textarea id="terminal" rows="5" cols="20" spellcheck="false"></textarea>
 <input type="hidden" id="characterName" value="{{ .Name }}" />
 </body>
 </html>

@@ -5,12 +5,15 @@ import (
 	"fmt"
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo-contrib/session"
+	"github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
 	_ "github.com/lib/pq"
 	"go-chat-ai-server/app/di"
 	"go-chat-ai-server/app/service"
+
+	auth2 "go-chat-ai-server/ui/handler/auth"
 	"html/template"
 	"io"
 	"net/http"
@@ -19,7 +22,14 @@ import (
 
 func main() {
 	e := echo.New()
+	e.Use(middleware.RemoveTrailingSlashWithConfig(middleware.TrailingSlashConfig{
+		RedirectCode: http.StatusMovedPermanently,
+	}))
 	e.Use(middleware.Logger())
+	e.Use(CsrfPostMiddleware)
+	e.Use(middleware.CSRF())
+	e.Use(session.Middleware(sessions.NewCookieStore([]byte("abcdefg1234-session"))))
+
 	t := &Template{
 		templates: template.Must(template.ParseGlob("public/views/*.html")),
 	}
@@ -28,14 +38,32 @@ func main() {
 
 	sr, _ := di.InitService()
 	cs := chatService{chat: sr.ChatService}
-	e.Use(session.Middleware(sessions.NewCookieStore([]byte("abcdefg1234-session"))))
-	e.GET("/", cs.handleCharacterSelectEntry)
-	e.GET("/chat", cs.handleChatEntry)
-	e.POST("/character", cs.handleSetCharacter)
-	e.File("/character/create", "public/character_create.html")
-	e.POST("/character/create", cs.handleCharacterCreate)
+	authHandler := auth2.ProvideAuthHandler(sr.AuthService)
 
-	api := e.Group("/api")
+	e.GET("/", func(c echo.Context) error {
+		return c.Redirect(http.StatusFound, "/login")
+	})
+	e.GET("/login", authHandler.LoginEntry)
+	e.POST("/login", authHandler.Login)
+
+	e.GET("/signup", authHandler.SignUpEntry)
+	e.POST("/signup", authHandler.SignUp)
+
+	authenticated := e.Group("/ai")
+	authenticated.Use(SessionAuthMiddleware)
+	authenticated.Use(echojwt.WithConfig(auth2.UserJwtConfig()))
+
+	authenticated.GET("", func(c echo.Context) error {
+		return c.Redirect(http.StatusFound, "/ai/entry")
+	})
+	authenticated.GET("/entry", cs.handleCharacterSelectEntry)
+	authenticated.GET("/chat", cs.handleChatEntry)
+	authenticated.POST("/character", cs.handleSetCharacter)
+	authenticated.File("/character/create", "public/character_create.html")
+	authenticated.POST("/character/create", cs.handleCharacterCreate)
+	authenticated.GET("/logout", authHandler.Logout)
+
+	api := authenticated.Group("/api")
 	api.Use(APIKeyAuthMiddleware)
 	api.POST("/chat", cs.handleChatSend)
 
@@ -179,4 +207,34 @@ type Template struct {
 
 func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
 	return t.templates.ExecuteTemplate(w, name, data)
+}
+
+func SessionAuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		sess, _ := session.Get("session", c)
+		c.Request().Header.Add("Authorization", fmt.Sprintf("Bearer %s", sess.Values["token"]))
+		c.Logger().Debugf("session: %v", sess.Values)
+		if err := next(c); err != nil {
+			c.Error(err)
+		}
+		return nil
+	}
+}
+
+func CsrfPostMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		csrfCookie, err := c.Request().Cookie("_csrf")
+		if err != nil {
+			c.Logger().Debugf("csrf cookie error: %s", err.Error())
+		}
+		csrf := csrfCookie.Value
+		if csrf != "" {
+			c.Request().Header.Add("X-CSRF-Token", csrf)
+			c.Logger().Debugf("csrf: %s", c.Request().FormValue("_csrf"))
+		}
+		if err := next(c); err != nil {
+			c.Error(err)
+		}
+		return nil
+	}
 }

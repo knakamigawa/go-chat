@@ -4,3 +4,4 @@ export PORT=8080
 export DB_USER=
 export DB_PASSWORD=
 export DB_HOST=
+export JWT_SECRET=secret_change_pleas
