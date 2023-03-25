@@ -21,6 +21,7 @@ export PORT=[your port]
 export DB_USER=[your postgres user]
 export DB_PASSWORD=[your postgres password]
 export DB_HOST=[your postgres host]
+export JWT_SECRET=[your jwt secret]
 ```
 
 ## usage
@@ -35,14 +36,3 @@ Please access this URL in your browser.
 
 `http://localhost:[your port]`
 
-
-### API
-
-```shell
-% curl 'http://localhost:[your port]/api?text=こんにちは' -H 'Content-Type: application/json' -H 'Authorization: Bearer [your api call api token]'
-
-# example
-% curl 'http://localhost:8080?/api?text=こんにちは' -H 'Content-Type: application/json' -H 'Authorization: Bearer api_key_1234' 
-```
-
-※本アプリケーションを利用する場合、簡易的な認証機構を入れていますが広く公開する場合はきちんと認証機構を実装することをお勧めします
