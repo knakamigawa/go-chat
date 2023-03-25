@@ -35,8 +35,7 @@ func (c ChatAPIClient) Request(inputText string, character model.Character) (str
 
 	encoded, err := json.Marshal(body)
 	if err != nil {
-		fmt.Println(err.Error())
-		os.Exit(1)
+		return "", err
 	}
 
 	fmt.Println(string(encoded))
@@ -49,8 +48,7 @@ func (c ChatAPIClient) Request(inputText string, character model.Character) (str
 
 	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Println(err.Error())
-		os.Exit(1)
+		return "", err
 	}
 
 	defer func(Body io.ReadCloser) {
@@ -64,8 +62,7 @@ func (c ChatAPIClient) Request(inputText string, character model.Character) (str
 	var responseBody Response
 	err = json.Unmarshal(byteArray, &responseBody)
 	if err != nil {
-		fmt.Println(err.Error())
-		os.Exit(1)
+		return "", err
 	}
 
 	var msg string
